@@ -38,7 +38,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
          <MantineProvider>
-        <NextTopLoader  height={2} showSpinner={false}  crawlSpeed={200}/>
+        <NextTopLoader  height={2} showSpinner={false} />
         <Notifications position="top-right" zIndex={1000} />
           {children}
         </MantineProvider>

@@ -1,40 +1,64 @@
-"use client";
 
-import { Button } from "@/components/ui/button";
-import { notifications } from "@mantine/notifications";
-import { CheckIcon, XIcon } from "lucide-react";
+import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { Topbar } from "@/components/shared/topbar";
+import { Sidebar } from "@/components/shared/sidebar";
+import { SidebarProvider } from "@/contexts/sidebar-context";
 
-export default function Home() {
-  const showError = () =>
-    notifications.show({
-      title: "Bummer!",
-      message: "Something went wrong",
-      color: "red",
-      icon: <XIcon size={16} />,
-    });
 
-  const showSuccess = () =>
-    notifications.show({
-      title: "All good!",
-      message: "Everything is fine",
-      color: "teal",
-      icon: <CheckIcon size={16} />,
-    });
+
+async function getUser() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data?.user) redirect("/auth/login");
+  return data.user;
+}
+
+async function getUserRole(userId: string) {
+  const supabase = await createClient();
+  const { data: profile } = await supabase
+    .from("profiles") // Update with your actual profiles table name
+    .select("role")
+    .eq("id", userId)
+    .single();
+  
+  return profile?.role === "admin" ? "admin" : "user";
+}
+
+interface Props {
+  searchParams: Promise<{ page?: string; cursor?: string }>;
+}
+
+export default async function Home({ searchParams }: Props) {
+  const [user, { page, cursor }] = await Promise.all([
+    getUser(),
+    searchParams,
+  ]);
+  
+  // Fetch user role
+  const role = await getUserRole(user.id);
 
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16" />
+    <SidebarProvider>
+      <div className="flex h-screen overflow-hidden bg-muted/30">
+        <Sidebar user={user} role={role} />
 
-        <div className="flex gap-4">
-          <Button onClick={showError} variant="destructive">
-            Show Error Toast
-          </Button>
-          <Button onClick={showSuccess}>
-            Show Success Toast
-          </Button>
-        </div>
+      <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
+        <Topbar user={user} />
+        <main className="flex-1 overflow-y-auto">
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center py-20 text-sm text-muted-foreground">
+                Loading posts…
+              </div>
+            }
+          >
+           {/* <PostsPage page={page} cursor={cursor} /> */}
+          </Suspense>
+        </main>
       </div>
-    </main>
+    </div>
+    </SidebarProvider>
   );
 }
