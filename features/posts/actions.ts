@@ -5,7 +5,7 @@ import { FacebookPost, FacebookPostsResponse, Post, PostsPage } from "./types";
 
 
 export async function getFacebookPosts(cursor?: string): Promise<PostsPage> {
- 'use cache'
+
   const { token, pageId } = getEnv();
 
   const url = new URL(`${BASE}/${pageId}/posts`);
