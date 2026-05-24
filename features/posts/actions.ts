@@ -1,3 +1,4 @@
+"use server";
 import { BASE, PAGE_SIZE } from "@/utils/constants";
 import { getEnv, mapToPost } from "@/utils/helpers";
 import { FacebookPost, FacebookPostsResponse, Post, PostsPage } from "./types";
@@ -52,4 +53,23 @@ export async function getFacebookPostById(id: string): Promise<Post> {
 
   const p: FacebookPost = await res.json();
   return mapToPost(p);
+}
+export async function updateFacebookPost(
+  id: string,
+  message: string
+): Promise<{ success: boolean }> {
+  const { token } = getEnv();
+
+  const res = await fetch(`${BASE}/${id}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message, access_token: token }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error?.message ?? "Failed to update post");
+  }
+
+  return { success: true };
 }

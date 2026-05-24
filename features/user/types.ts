@@ -11,3 +11,4 @@ export interface User {
   email?: string;
 
 }
+export type Role = "admin" | "user";

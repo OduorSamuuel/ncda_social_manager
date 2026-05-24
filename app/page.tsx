@@ -5,8 +5,9 @@ import { Suspense } from "react";
 import { Topbar } from "@/components/shared/topbar";
 import { Sidebar } from "@/components/shared/sidebar";
 import { SidebarProvider } from "@/contexts/sidebar-context";
-import { getUser, getUserRole } from "@/features/user/actions";
+import { getUser } from "@/features/user/actions";
 import PostsPage from "@/features/posts/post-page";
+import { PageLoader } from "@/components/shared/loading";
 
 
 
@@ -21,13 +22,12 @@ export default async function Home({ searchParams }: Props) {
     searchParams,
   ]);
   
-  // Fetch user role
-  const role = await getUserRole(user.id);
+  
 
   return (
     <SidebarProvider>
       <div className="flex h-screen overflow-hidden bg-muted/30">
-        <Sidebar user={user} role={role} />
+        <Sidebar user={user} role={user.role} />
 
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
         <Topbar user={user} />
@@ -35,7 +35,7 @@ export default async function Home({ searchParams }: Props) {
           <Suspense
             fallback={
               <div className="flex items-center justify-center py-20 text-sm text-muted-foreground">
-                Loading posts…
+               <PageLoader/>
               </div>
             }
           >
