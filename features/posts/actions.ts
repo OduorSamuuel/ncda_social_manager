@@ -34,7 +34,6 @@ export async function getFacebookPosts(cursor?: string): Promise<PostsPage> {
 }
 
 export async function getFacebookPostById(id: string): Promise<Post> {
-  'use cache'
   const { token } = getEnv();
 
   const url = new URL(`${BASE}/${id}`);
