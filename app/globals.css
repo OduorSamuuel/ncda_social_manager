@@ -68,3 +68,12 @@
     @apply bg-background text-foreground;
   }
 }
+@keyframes pulse-ring {
+  0%, 100% { transform: scale(0.85); opacity: 0.5; }
+  50% { transform: scale(1.15); opacity: 0.12; }
+}
+
+@keyframes bar-grow {
+  0%, 100% { transform: scaleX(0.15); opacity: 0.3; }
+  50% { transform: scaleX(1); opacity: 1; }
+}

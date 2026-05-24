@@ -1,30 +1,15 @@
 
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+
+
 import { Topbar } from "@/components/shared/topbar";
 import { Sidebar } from "@/components/shared/sidebar";
 import { SidebarProvider } from "@/contexts/sidebar-context";
+import { getUser, getUserRole } from "@/features/user/actions";
+import PostsPage from "@/features/posts/post-page";
 
 
 
-async function getUser() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data?.user) redirect("/auth/login");
-  return data.user;
-}
-
-async function getUserRole(userId: string) {
-  const supabase = await createClient();
-  const { data: profile } = await supabase
-    .from("profiles") // Update with your actual profiles table name
-    .select("role")
-    .eq("id", userId)
-    .single();
-  
-  return profile?.role === "admin" ? "admin" : "user";
-}
 
 interface Props {
   searchParams: Promise<{ page?: string; cursor?: string }>;
@@ -54,7 +39,7 @@ export default async function Home({ searchParams }: Props) {
               </div>
             }
           >
-           {/* <PostsPage page={page} cursor={cursor} /> */}
+            <PostsPage page={page} cursor={cursor} /> 
           </Suspense>
         </main>
       </div>

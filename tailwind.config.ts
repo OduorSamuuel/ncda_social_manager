@@ -7,8 +7,9 @@ export default {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
+     "./features/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  theme: {
+  theme: {   
     extend: {
       colors: {
         background: "hsl(var(--background))",
