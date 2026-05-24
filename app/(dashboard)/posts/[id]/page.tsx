@@ -6,7 +6,7 @@ import { getFacebookPostById } from "@/features/posts/actions";
 import PostDetailClient from "@/features/posts/post-detail-client";
 
 
-//export const dynamic = "force-dynamic";
+
 
 interface Props {
   params: Promise<{ id: string }>;
