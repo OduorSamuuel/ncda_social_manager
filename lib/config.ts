@@ -55,7 +55,7 @@ export function deriveConfig(
   if (isEditPost) {
     primaryLabel = "Save changes";
   } else if (!isAdmin) {
-    primaryLabel = "Submit for review";
+    primaryLabel = "Submit";
   } else if (scheduled) {
     primaryLabel = "Schedule";
   } else {
