@@ -117,7 +117,7 @@ export interface PostEditorShellProps {
 
   // Media
   mediaFiles: MediaFile[];
-  fileInputRef: React.RefObject<HTMLInputElement>;
+fileInputRef: React.RefObject<HTMLInputElement | null>;
   onFiles: (files: FileList | null) => void;
   onRemoveMedia: (id: string) => void;
   activeItem?: MediaFile;
