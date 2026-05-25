@@ -31,7 +31,7 @@ function LoginPage() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<PageLoader />}>
+    <Suspense fallback={<PageLoader  fullPage/>}>
       <LoginPage />
     </Suspense>
   );
