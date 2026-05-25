@@ -1,9 +1,13 @@
-import React from 'react'
+import { Suspense } from "react";
+import AnalyticsContent from "../../../features/analytics/analytic-content";
+import { PageLoader } from "@/components/shared/loading";
 
-function AnalyticsPage() {
+export const dynamic = "force-dynamic"; 
+
+export default function AnalyticsPage() {
   return (
-    <div>AnalyticsPage</div>
-  )
+    <Suspense fallback={<PageLoader/>}>
+      <AnalyticsContent />
+    </Suspense>
+  );
 }
-
-export default AnalyticsPage
