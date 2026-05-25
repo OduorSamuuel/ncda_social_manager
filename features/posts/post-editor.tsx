@@ -14,11 +14,12 @@ interface PostEditorProps {
   draft?: DraftRow | null;
   fbPostId?: string;
   fbPostContent?: string;
+   fbMediaUrls?: string[];
 }
 
-export function PostEditor({ mode, role, actions, draft, fbPostId, fbPostContent }: PostEditorProps) {
+export function PostEditor({ mode, role, actions, draft, fbPostId, fbPostContent, fbMediaUrls }: PostEditorProps) {
   const editor = usePostEditor({ mode, role, actions, draft, fbPostId, fbPostContent });
-
+console.log("fbPostContent received:", fbPostContent);
   const config = useMemo(
     () => deriveConfig(mode, role, draft, fbPostId, editor.scheduled),
     [mode, role, draft, fbPostId, editor.scheduled]
@@ -57,6 +58,7 @@ export function PostEditor({ mode, role, actions, draft, fbPostId, fbPostContent
       onConfirmOpenChange={editor.setConfirmOpen}
       onSaveDraft={editor.handleSaveDraft}
       onConfirmedSubmit={editor.handleConfirmedSubmit}
+      fbMediaUrls={fbMediaUrls}
     />
   );
 }

@@ -2,7 +2,7 @@ import { PenLine } from "lucide-react";
 
 export function PageLoader() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-8">
+<div className="flex flex-col items-center justify-center h-full gap-8 ">
 
       {/* Logo mark with pulse ring */}
       <div className="relative flex items-center justify-center w-16 h-16">

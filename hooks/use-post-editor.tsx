@@ -234,6 +234,9 @@ export function usePostEditor({
         icon: <Check size={16} />,
         autoClose: 4000,
       });
+ 
+  setTimeout(() => router.push("/drafts"), 1500);
+
     } catch (err) {
       notifications.show({
         title: "Failed to save draft",
@@ -245,7 +248,7 @@ export function usePostEditor({
     } finally {
       setIsSaving(false);
     }
-  }, [canAct, mediaFiles, actions, content, linkUrl, scheduled, scheduleDate, scheduleTime, draft]);
+  }, [canAct, mediaFiles, actions, content, linkUrl, scheduled, scheduleDate, scheduleTime, draft,router]);
 
   // ── Publish / update ──────────────────────────────────────────────────────────
   const handleConfirmedSubmit = useCallback(async () => {

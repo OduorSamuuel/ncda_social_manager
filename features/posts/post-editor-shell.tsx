@@ -10,7 +10,7 @@ import {
   DndContext, closestCenter, DragOverlay,
 } from "@dnd-kit/core";
 import {
-  SortableContext, rectSortingStrategy, useSortable, arrayMove,
+  SortableContext, rectSortingStrategy, useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
@@ -28,9 +28,8 @@ import { MediaFile } from "@/hooks/use-post-editor";
 import { PostEditorConfig } from "@/lib/config";
 import { DraftRow } from "../drafts/types";
 
+// ─── Sortable item ────────────────────────────────────────────────────────────
 
-
-// ─── Sortable item 
 function SortableMediaItem({
   item, index, isFirst, onRemove,
 }: {
@@ -47,7 +46,6 @@ function SortableMediaItem({
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={item.previewUrl} alt={`Media ${index + 1}`} className="w-full h-full object-cover" draggable={false} />
-
       {isFirst && (
         <span className="absolute bottom-1.5 left-1.5 text-[9px] font-semibold bg-black/70 text-white px-1.5 py-0.5 rounded-full pointer-events-none">
           Cover
@@ -99,6 +97,7 @@ function DragPreview({ item }: { item: MediaFile }) {
 export interface PostEditorShellProps {
   config: PostEditorConfig;
   draft?: DraftRow | null;
+  fbMediaUrls?: string[];
 
   // Content
   content: string;
@@ -145,6 +144,7 @@ export interface PostEditorShellProps {
 export function PostEditorShell({
   config,
   draft,
+  fbMediaUrls,
   content, onContentChange,
   linkUrl, onLinkUrlChange,
   charsLeft, isOverLimit,
@@ -158,12 +158,16 @@ export function PostEditorShell({
   onSaveDraft, onConfirmedSubmit,
 }: PostEditorShellProps) {
 
-  // Resolve the live primary label (reflects in-progress and success states)
   const resolvedPrimaryLabel = isSubmitting
     ? config.primaryLabelLoading
     : submitSuccess
     ? config.primaryLabelSuccess
     : config.primaryLabel;
+
+  // Decide what to show in the preview media section
+  const previewUrls = fbMediaUrls && fbMediaUrls.length > 0
+    ? fbMediaUrls
+    : mediaFiles.map((m) => m.previewUrl);
 
   return (
     <>
@@ -197,24 +201,21 @@ export function PostEditorShell({
 
           <div className="flex-1" />
 
-          {/* Save draft button — hidden on edit-post */}
-          {!config.canPublish ? null : (
-            // Admin: show "Update/Save draft" only when not editing a live post
-            config.canEditMedia && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="hidden sm:flex"
-                disabled={!canAct}
-                onClick={onSaveDraft}
-              >
-                {isSaving && <Loader2 size={13} className="animate-spin mr-1.5" />}
-                {config.saveDraftLabel}
-              </Button>
-            )
+          {/* Admin: save draft — only when not editing a live post */}
+          {config.canPublish && config.canEditMedia && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="hidden sm:flex"
+              disabled={!canAct}
+              onClick={onSaveDraft}
+            >
+              {isSaving && <Loader2 size={13} className="animate-spin mr-1.5" />}
+              {config.saveDraftLabel}
+            </Button>
           )}
 
-          {/* Non-admin always sees the save draft button */}
+          {/* Non-admin: always sees save draft */}
           {!config.canPublish && (
             <Button
               variant="outline"
@@ -294,22 +295,16 @@ export function PostEditorShell({
                   <span className="text-[11px] text-muted-foreground">
                     Use emojis, links, and hashtags freely
                   </span>
-                  <span
-                    className={cn(
-                      "text-[11px] tabular-nums",
-                      isOverLimit
-                        ? "text-destructive font-medium"
-                        : charsLeft < 200
-                        ? "text-yellow-600"
-                        : "text-muted-foreground"
-                    )}
-                  >
+                  <span className={cn(
+                    "text-[11px] tabular-nums",
+                    isOverLimit ? "text-destructive font-medium" : charsLeft < 200 ? "text-yellow-600" : "text-muted-foreground"
+                  )}>
                     {charsLeft.toLocaleString()}
                   </span>
                 </div>
               </div>
 
-              {/* Media */}
+              {/* Media upload — hidden when editing a live post */}
               {config.canEditMedia && (
                 <div className="bg-background rounded-xl border border-border p-4 space-y-3">
                   <div className="flex items-center justify-between">
@@ -354,9 +349,7 @@ export function PostEditorShell({
                   >
                     <ImagePlus size={24} className="text-muted-foreground" />
                     <p className="text-xs text-muted-foreground text-center">
-                      Drag & drop or{" "}
-                      <span className="text-primary font-medium">browse</span>{" "}
-                      to upload
+                      Drag & drop or <span className="text-primary font-medium">browse</span> to upload
                     </p>
                     <span className="text-[11px] text-muted-foreground">
                       Photos stored securely until post is published
@@ -438,7 +431,7 @@ export function PostEditorShell({
                 </div>
               </div>
 
-              {/* Schedule — admin only, not on edit-post */}
+              {/* Schedule */}
               {config.canSchedule && (
                 <div className="bg-background rounded-xl border border-border p-4 space-y-3">
                   <h2 className="text-xs font-medium text-foreground flex items-center gap-1.5">
@@ -473,9 +466,9 @@ export function PostEditorShell({
                   <h2 className="text-xs font-medium text-foreground">Draft status</h2>
                   <div className={cn(
                     "inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-full",
-                    draft.status === "pending" && "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-                    draft.status === "rejected" && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-                    draft.status === "approved" && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+                    draft.status === "pending"   && "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+                    draft.status === "rejected"  && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+                    draft.status === "approved"  && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
                     draft.status === "published" && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
                   )}>
                     <span className="w-1.5 h-1.5 rounded-full bg-current" />
@@ -502,9 +495,7 @@ export function PostEditorShell({
                   </div>
 
                   <p className="text-xs text-foreground leading-relaxed whitespace-pre-wrap break-words">
-                    {content || (
-                      <span className="text-muted-foreground italic">Your post will appear here…</span>
-                    )}
+                    {content || <span className="text-muted-foreground italic">Your post will appear here…</span>}
                   </p>
 
                   {linkUrl && (
@@ -513,18 +504,24 @@ export function PostEditorShell({
                     </div>
                   )}
 
-                  {mediaFiles.length > 0 ? (
+                  {/* ── Media preview ── */}
+                  {previewUrls.length > 0 ? (
                     <div className={cn(
                       "grid gap-1 rounded overflow-hidden",
-                      mediaFiles.length === 1 ? "grid-cols-1" : "grid-cols-2"
+                      previewUrls.length === 1 ? "grid-cols-1" : "grid-cols-2"
                     )}>
-                      {mediaFiles.slice(0, 4).map((mf, i) => (
-                        <div key={mf.id} className="relative aspect-square bg-muted">
+                      {previewUrls.slice(0, 4).map((url, i) => (
+                        <div key={i} className="relative aspect-square bg-muted">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={mf.previewUrl} alt="" className="w-full h-full object-cover" />
-                          {i === 3 && mediaFiles.length > 4 && (
+                          <img
+                            src={url}
+                            alt=""
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                          {i === 3 && previewUrls.length > 4 && (
                             <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-xs font-semibold">
-                              +{mediaFiles.length - 4}
+                              +{previewUrls.length - 4}
                             </div>
                           )}
                         </div>

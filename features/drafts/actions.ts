@@ -287,6 +287,7 @@ export async function publishDraft(
   return { fbPostId };
 }
 export async function getDraftById(id: string): Promise<DraftRow> {
+  console.log("Fetching draft by ID:", id);
   const user = await getUser()
 const supabase =await createClient();
 
@@ -321,4 +322,37 @@ export async function deleteDraftMedia(path: string): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase.storage.from(BUCKET).remove([path]);
   if (error) throw new Error(error.message);
+}
+export async function getDrafts(status?: DraftRow["status"]): Promise<DraftRow[]> {
+  const { id, role } = await getUser();
+
+const supabase = await createClient();
+
+  let query = supabase
+    .from("post_drafts")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (role !== "admin") query = query.eq("user_id", id);
+  if (status) query = query.eq("status", status);
+
+  const { data, error } = await query;
+  if (error) throw new Error(error.message);
+
+  const drafts = data ?? [];
+
+  const userIds = [...new Set(drafts.map((d) => d.user_id))];
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, full_name")
+    .in("id", userIds);
+
+  const nameMap = Object.fromEntries(
+    (profiles ?? []).map((p) => [p.id, p.full_name])
+  );
+
+  return drafts.map((row) => ({
+    ...row,
+    author_name: nameMap[row.user_id] ?? null,
+  }));
 }
