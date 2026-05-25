@@ -74,7 +74,7 @@ function NavContent({ user, role, collapsed = false, onNavigate }: NavContentPro
               {getDisplayName(user)}
             </p>
             <p className="text-[11px] text-muted-foreground truncate leading-none">
-              {role === "admin" ? "Admin" : "Contributor"}
+              {role === "admin" ? "Admin" : "User"}
             </p>
           </div>
         </div>
