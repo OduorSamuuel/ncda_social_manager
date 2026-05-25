@@ -1,13 +1,12 @@
 import { Suspense } from "react";
 import { LoginForm } from "@/components/login-form";
+import { PageLoader } from "@/components/shared/loading";
 import Image from "next/image";
 
-export default function Page() {
+function LoginPage() {
   return (
     <div className="flex min-h-svh w-full">
-      <Suspense fallback={<div className="flex-1" />}>
-        <LoginForm />
-      </Suspense>
+      <LoginForm />
       <div className="relative hidden md:block flex-1">
         <Image
           src="/images/login-bg.jpg"
@@ -27,5 +26,13 @@ export default function Page() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <LoginPage />
+    </Suspense>
   );
 }
