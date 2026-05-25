@@ -39,12 +39,12 @@ export interface PostActions {
       scheduledFor?: string;
       draftId?: string;
     }
-  ) => Promise<string>;
+  ) => Promise<{ id: string }>
   publishDraft: (
     draftId: string,
     opts: { content: string; scheduledFor?: string }
-  ) => Promise<string>;
-  updateFacebookPost: (fbPostId: string, content: string) => Promise<void>;
+  ) => Promise<{ fbPostId: string }>;
+updateFacebookPost: (fbPostId: string, content: string) => Promise<{ success: boolean }>;
 }
 
 interface UsePostEditorParams {
