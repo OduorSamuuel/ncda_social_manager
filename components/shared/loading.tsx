@@ -1,9 +1,11 @@
 import { PenLine } from "lucide-react";
+interface PageLoaderProps {
+  fullPage?: boolean;
+}
 
-export function PageLoader() {
+export function PageLoader({ fullPage = false }: PageLoaderProps) {
   return (
-<div className="flex flex-col items-center justify-center h-full gap-8 ">
-
+    <div className={`flex flex-col items-center justify-center gap-8 -mt-16 ${fullPage ? "min-h-svh" : "h-full"}`}>
       {/* Logo mark with pulse ring */}
       <div className="relative flex items-center justify-center w-16 h-16">
         <div className="absolute inset-[-12px] rounded-full border border-primary/40 animate-[pulse-ring_2s_ease-in-out_infinite]" />
