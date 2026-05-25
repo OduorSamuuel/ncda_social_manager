@@ -39,11 +39,11 @@ export interface PostActions {
       scheduledFor?: string;
       draftId?: string;
     }
-  ) => Promise<void>;
+  ) => Promise<string>;
   publishDraft: (
     draftId: string,
     opts: { content: string; scheduledFor?: string }
-  ) => Promise<void>;
+  ) => Promise<string>;
   updateFacebookPost: (fbPostId: string, content: string) => Promise<void>;
 }
 
