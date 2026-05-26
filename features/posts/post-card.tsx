@@ -7,6 +7,7 @@ import { Heart, MessageCircle, Share2, Eye, Edit, Copy, Trash2, ChevronLeft, Che
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Post } from "./types";
+import { Role } from "../user/types";
 
 
 const statusConfig = {
@@ -23,9 +24,11 @@ interface PostCardProps {
   post: Post;
   onDuplicate?: (id: string) => void;
   onDelete?: (id: string) => void;
+  role: Role; 
 }
 
-export function PostCard({ post, onDuplicate, onDelete }: PostCardProps) {
+export function PostCard({ post, onDuplicate, onDelete, role }: PostCardProps) {
+   const isAdmin = role === "admin";
   const { label, className } = statusConfig[post.status];
   const [imgIndex, setImgIndex] = useState(0);
   const router = useRouter();
@@ -146,27 +149,29 @@ export function PostCard({ post, onDuplicate, onDelete }: PostCardProps) {
         )}
 
         {/* Action buttons — stopPropagation so they don't trigger the Link */}
-        <div
-          className="flex gap-1.5 pt-1 border-t border-border"
-          onClick={(e) => e.preventDefault()}
+      <div className="flex gap-1.5 pt-1 border-t border-border" onClick={(e) => e.preventDefault()}>
+    {isAdmin && (
+      <>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex-1 h-7 text-[11px] gap-1"
+          onClick={handleEdit}
         >
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex-1 h-7 text-[11px] gap-1"
-            onClick={handleEdit}
-          >
-            <Edit size={11} /> Edit
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex-1 h-7 text-[11px] gap-1"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDuplicate?.(post.id); }}
-          >
-            <Copy size={11} /> Duplicate
-          </Button>
-        </div>
+          <Edit size={11} /> Edit
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex-1 h-7 text-[11px] gap-1"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDuplicate?.(post.id); }}
+        >
+          <Copy size={11} /> Duplicate
+        </Button>
+      </>
+    )}
+  
+  </div>
       </div>
     </Link>
   );

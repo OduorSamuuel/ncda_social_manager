@@ -25,9 +25,7 @@ function buildNavItems(role: "admin" | "user") {
     {
       section: "Manage",
       links: [
-        ...(isAdmin
-          ? [{ href: "/", label: "Posts", icon: LayoutList, badge: "12" }]
-          : []),
+        { href: "/", label: "Posts", icon: LayoutList, badge: isAdmin ? "12" : undefined },
         { href: "/posts/new", label: "Create post", icon: PenLine },
         {
           href: "/drafts",
@@ -36,28 +34,15 @@ function buildNavItems(role: "admin" | "user") {
           badge: isAdmin ? "·" : undefined,
         },
         ...(isAdmin
-          ? [
-              {
-                href: "/scheduled",
-                label: "Scheduled",
-                icon: Calendar,
-                badge: "3",
-              },
-            ]
+          ? [{ href: "/scheduled", label: "Scheduled", icon: Calendar, badge: "3" }]
           : []),
       ],
     },
     ...(isAdmin
-      ? [
-          {
-            section: "Insights",
-            links: [{ href: "/analytics", label: "Analytics", icon: BarChart2 }],
-          },
-        ]
+      ? [{ section: "Insights", links: [{ href: "/analytics", label: "Analytics", icon: BarChart2 }] }]
       : []),
   ];
 }
-
 interface MobileNavInnerProps {
   role: "admin" | "user";
 }

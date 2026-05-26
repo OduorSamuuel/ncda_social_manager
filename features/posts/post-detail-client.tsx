@@ -17,6 +17,7 @@ import { Post } from "./types";
 interface Props {
   post: Post | null;
   error: string | null;
+   role: string; 
 }
 
 const statusConfig = {
@@ -221,7 +222,7 @@ function GalleryGrid({
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export default function PostDetailClient({ post, error }: Props) {
+export default function PostDetailClient({ post, error,role }: Props) {
   const router = useRouter();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -286,21 +287,27 @@ export default function PostDetailClient({ post, error }: Props) {
           <span className="text-sm font-semibold text-foreground flex-1 truncate">Post detail</span>
 
           {/* Actions */}
-          <div className="flex items-center gap-1.5">
-            <Button variant="outline" size="sm" className="gap-1.5 hidden sm:flex">
-              <Copy size={13} /> Duplicate
-            </Button>
-            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => router.push(`/posts/${post.id}/edit`)}>
-              <Edit size={13} /> Edit
-            </Button>
-            <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:text-destructive border-destructive/30 hidden sm:flex">
-              <Trash2 size={13} /> Delete
-            </Button>
-            {/* Mobile overflow */}
-            <Button variant="ghost" size="sm" className="sm:hidden">
-              <MoreHorizontal size={15} />
-            </Button>
-          </div>
+      
+<div className="flex items-center gap-1.5">
+  {(role === "admin" || post.status !== "published") && (
+    <Button variant="outline" size="sm" className="gap-1.5 hidden sm:flex">
+      <Copy size={13} /> Duplicate
+    </Button>
+  )}
+  {(role === "admin" || post.status !== "published") && (
+    <Button variant="outline" size="sm" className="gap-1.5" onClick={() => router.push(`/posts/${post.id}/edit`)}>
+      <Edit size={13} /> Edit
+    </Button>
+  )}
+ {(role === "admin" || post.status !== "published") && (
+  <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:text-destructive border-destructive/30 hidden sm:flex">
+    <Trash2 size={13} /> Delete
+  </Button>
+)}
+  <Button variant="ghost" size="sm" className="sm:hidden">
+    <MoreHorizontal size={15} />
+  </Button>
+</div>
         </div>
 
         {/* Body */}

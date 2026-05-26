@@ -1,27 +1,29 @@
+import { getUser } from "@/features/user/actions";
 import { getFacebookPosts } from "./actions";
 import PostsClient from "./posts-client";
 import { Post } from "./types";
 
-interface Props {
-  page?: string;
-  cursor?: string;
-}
-
-export default async function PostsPage({ page, cursor }: Props) {
-  const currentPage = Math.max(1, parseInt(page ?? "1", 10));
+export default async function PostsPage() {
+  const currentPage = 1; // or from searchParams
 
   let posts: Post[] = [];
   let error: string | null = null;
   let nextCursor: string | null = null;
   let previousCursor: string | null = null;
 
-  try {
-    const result = await getFacebookPosts(cursor);
-    posts = result.posts;
-    nextCursor = result.nextCursor;
-    previousCursor = result.previousCursor;
-  } catch (e) {
-    error = (e as Error).message;
+  const [user, result] = await Promise.allSettled([
+    getUser(),
+    getFacebookPosts(),
+  ]);
+
+  const role = user.status === "fulfilled" ? user.value.role : "user";
+
+  if (result.status === "fulfilled") {
+    posts = result.value.posts;
+    nextCursor = result.value.nextCursor;
+    previousCursor = result.value.previousCursor;
+  } else {
+    error = (result.reason as Error).message;
   }
 
   return (
@@ -31,6 +33,7 @@ export default async function PostsPage({ page, cursor }: Props) {
       currentPage={currentPage}
       nextCursor={nextCursor}
       previousCursor={previousCursor}
+      role={role}
     />
   );
 }
