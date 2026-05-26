@@ -42,10 +42,12 @@ import {
 import { cn } from "@/lib/utils";
 import { DraftRow } from "./types";
 import { deleteDraft, getSignedUrl, publishDraft } from "./actions";
+import { Role } from "../user/types";
 
 interface Props {
   draft: DraftRow | null;
   error: string | null;
+  role: Role;
 }
 
 interface MediaItem {
@@ -198,7 +200,7 @@ function GalleryGrid({ mediaItems, onOpen, isLoading }: { mediaItems: MediaItem[
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export default function DraftDetailClient({ draft, error }: Props) {
+export default function DraftDetailClient({ draft, error, role }: Props) {
   const router = useRouter();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
@@ -370,9 +372,7 @@ export default function DraftDetailClient({ draft, error }: Props) {
           </Button>
           <span className="text-sm font-semibold text-foreground flex-1 truncate">Draft detail</span>
           <div className="flex items-center gap-1.5">
-            <Button variant="outline" size="sm" className="gap-1.5 hidden sm:flex" onClick={handleDuplicate}>
-              <Copy size={13} /> Duplicate
-            </Button>
+         
             {canEdit && (
               <Button variant="outline" size="sm" className="gap-1.5" onClick={() => router.push(`/drafts/${draft.id}/edit`)}>
                 <Edit size={13} /> Edit
@@ -381,11 +381,11 @@ export default function DraftDetailClient({ draft, error }: Props) {
             <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:text-destructive border-destructive/30 hidden sm:flex" onClick={() => setDeleteDialogOpen(true)}>
               <Trash2 size={13} /> Delete
             </Button>
-            {canPublish && (
-              <Button size="sm" className="gap-1.5" onClick={() => setPublishDialogOpen(true)}>
-                <Send size={13} /> Publish
-              </Button>
-            )}
+          {canPublish && role === "admin" && (
+  <Button size="sm" className="gap-1.5" onClick={() => setPublishDialogOpen(true)}>
+    <Send size={13} /> Publish
+  </Button>
+)}
             <Button variant="ghost" size="sm" className="sm:hidden">
               <MoreHorizontal size={15} />
             </Button>

@@ -39,8 +39,7 @@ export default async function Home({ searchParams }: Props) {
               </div>
             }
           >
-            <PostsPage /> 
-          </Suspense>
+<PostsPage searchParams={searchParams} />          </Suspense>
         </main>
       </div>
     </div>
