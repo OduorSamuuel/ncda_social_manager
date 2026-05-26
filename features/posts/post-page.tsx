@@ -3,8 +3,13 @@ import { getFacebookPosts } from "./actions";
 import PostsClient from "./posts-client";
 import { Post } from "./types";
 
-export default async function PostsPage() {
-  const currentPage = 1; // or from searchParams
+interface Props {
+  searchParams: Promise<{ page?: string; cursor?: string }>;
+}
+
+export default async function PostsPage({ searchParams }: Props) {
+  const { page, cursor } = await searchParams;
+  const currentPage = Number(page ?? 1);
 
   let posts: Post[] = [];
   let error: string | null = null;
@@ -13,7 +18,7 @@ export default async function PostsPage() {
 
   const [user, result] = await Promise.allSettled([
     getUser(),
-    getFacebookPosts(),
+    getFacebookPosts(cursor), // ← pass the cursor
   ]);
 
   const role = user.status === "fulfilled" ? user.value.role : "user";
