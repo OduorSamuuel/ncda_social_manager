@@ -20,7 +20,7 @@ function buildNavItems(role: "admin" | "user") {
     {
       section: "Manage",
       links: [
-        ...(isAdmin ? [{ href: "/", label: "Posts", icon: LayoutList, badge: "12" }] : []),
+        { href: "/", label: "Posts", icon: LayoutList, badge: isAdmin ? "12" : undefined }, // ← moved out
         { href: "/posts/create", label: "Create post", icon: PenLine },
         {
           href: "/drafts",

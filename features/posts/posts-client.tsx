@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Post, PostStatus } from "./types";
 import { PostCard } from "./post-card";
+import { Role } from "../user/actions";
 
 const FILTERS: { label: string; value: PostStatus | "all" }[] = [
   { label: "All", value: "all" },
@@ -33,6 +34,7 @@ interface Props {
   currentPage: number;
   nextCursor: string | null;
   previousCursor: string | null;
+  role:Role
 }
 
 export default function PostsClient({
@@ -41,6 +43,7 @@ export default function PostsClient({
   currentPage,
   nextCursor,
   previousCursor,
+  role,
 }: Props) {
   const router = useRouter();
   const [filter, setFilter] = useState<PostStatus | "all">("all");
@@ -119,6 +122,7 @@ export default function PostsClient({
             <PostCard
               key={post.id}
               post={post}
+              role={role}
               //onEdit={(id) => console.log("edit", id)}
               onDuplicate={(id) => console.log("dup", id)}
               onDelete={(id) => console.log("del", id)}
